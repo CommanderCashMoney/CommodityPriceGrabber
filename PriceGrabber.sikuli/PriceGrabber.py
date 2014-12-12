@@ -42,7 +42,7 @@ class GrabPrices:
         global arr 
         arr = []
 
-        for x in range(5):
+        for x in range(70):
             rowstart = grid.find("1416712504495.png")
            
             #capture images
