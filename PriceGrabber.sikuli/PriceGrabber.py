@@ -16,12 +16,17 @@ import priceverify
 Settings.OcrTextRead = True
 Settings.OcrTextSearch = True
 
+##################################
+#screen res adjustment
+#s = Screen(0)
+#xAd = 0.625
+#yAd = 0.817
 #################################################################
 class GrabPrices:
 # switch to ED and grab prices
     
     def __init__(self):
-    
+        
         App.focus("Elite - Dangerous (CLIENT)")
         #find commodity header
         global header
@@ -227,8 +232,8 @@ class PriceVerify:
 class sendtoSlopey(Runnable):        
     def __init__(self):               
         App.focus("ED BEST")
-        click("1416780620112.png")
-        
+        click("1418265915828.png")
+        type(Key.TAB)
         type(stationtext[:4])
         type(Key.TAB)
         for row in arr:
