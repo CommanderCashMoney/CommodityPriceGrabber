@@ -42,7 +42,7 @@ class GrabPrices:
         global arr 
         arr = []
 
-        for x in range(70):
+        for x in range(5):
             rowstart = grid.find("1416712504495.png")
            
             #capture images
@@ -93,14 +93,17 @@ class GrabPrices:
             alert = priceverify.PriceVerify().verify(sellprice,buyprice,supply,galavg,name)
             
             #clean up commodity names
-            namecleaned = nameclean.NameCleaner().cleanNames(name)
-           
+            name = str(re.sub("[^a-zA-Z\.\- ]","",name))
+            namecleaned, namefound = nameclean.NameCleaner().cleanNames(name)
+            if namefound == 0:
+                alert = alert + "namewarning"
+                
             #clean names of hash tags and only unwanted characters 
-            namecleaned =  re.sub("[^a-zA-Z\.\- ]","",namecleaned)
+            #namecleaned =  re.sub("[^a-zA-Z\.\- ]","",namecleaned)
             arr.append([namecleaned,namepic,sellprice,sellpic,buyprice,buypic,supply,alert,supplypic])
            
             
-            wait(0.16)
+            wait(0.1)
             keyDown("s")
             wait(0.1)
             keyUp("s")
@@ -154,7 +157,7 @@ class PriceVerify:
             self.field.setFont(awt.Font("Arial", awt.Font.BOLD, 30))
             self.field.setName("textfieldName")
             p.add(self.field)
-            if str(arr[arr.index(row)][7]) == 'namewarning':
+            if (str(arr[arr.index(row)][7])).find('namewarning') > 0:
                self.field.setBackground(awt.Color.red)
             self.resultPanel.add(p)
             #sell price
@@ -164,7 +167,7 @@ class PriceVerify:
             self.field.setFont(awt.Font("Arial", awt.Font.BOLD, 30))
             self.field.setName("textfield")
             p.add(self.field)
-            if str(arr[arr.index(row)][7]) == 'sellwarning':
+            if (str(arr[arr.index(row)][7])).find('sellwarning') > 0:
                self.field.setBackground(awt.Color.red)
             
             self.resultPanel.add(p)
@@ -176,7 +179,7 @@ class PriceVerify:
                 self.field.setFont(awt.Font("Arial", awt.Font.BOLD, 30))
                 self.field.setName("textfield")
                 p.add(self.field)
-                if str(arr[arr.index(row)][7]) == 'buywarning':
+                if (str(arr[arr.index(row)][7])).find('buywarning') > 0:
                    self.field.setBackground(awt.Color.red)
             
                 self.resultPanel.add(p)  
@@ -189,7 +192,7 @@ class PriceVerify:
                     self.field.setFont(awt.Font("Arial", awt.Font.BOLD, 30))
                     self.field.setName("textfield")
                     p.add(self.field)
-                    if str(arr[arr.index(row)][7]) == 'supplywarning':
+                    if (str(arr[arr.index(row)][7])).find('supplywarning') > 0:
                         self.field.setBackground(awt.Color.red)
                     self.resultPanel.add(p)  
             
@@ -237,15 +240,18 @@ class sendtoSlopey(Runnable):
         type(stationtext[:4])
         type(Key.TAB)
         for row in arr:
-            type(str(arr[arr.index(row)][0]))
-            type(Key.TAB)
-            type(str(arr[arr.index(row)][2]))
-            type(Key.TAB)
-            type(str(arr[arr.index(row)][4]))
-            type(Key.TAB)
-            type(str(arr[arr.index(row)][6]))
-            type(Key.TAB)
-            type(Key.ENTER)          
+            namecleaned, namefound = nameclean.NameCleaner().cleanNames(str(arr[arr.index(row)][0]))
+            if namefound == 1:
+                
+                type(str(arr[arr.index(row)][0]))
+                type(Key.TAB)
+                type(str(arr[arr.index(row)][2]))
+                type(Key.TAB)
+                type(str(arr[arr.index(row)][4]))
+                type(Key.TAB)
+                type(str(arr[arr.index(row)][6]))
+                type(Key.TAB)
+                type(Key.ENTER)          
 
 GrabPrices()
 PriceVerify()
