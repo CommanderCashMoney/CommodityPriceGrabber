@@ -286,6 +286,10 @@ class NameCleaner:
         if text ==  "MARINEEQUIPMENT":
             text = "MARINE EQUIPMENT"
             foundtext = 1
+            
+        if text ==  "MARINEEOUIPMENT":
+            text = "MARINE EQUIPMENT"
+            foundtext = 1
 
         if text ==  "MARINESUPPLIES":
             text = "MARINE SUPPLIES"
