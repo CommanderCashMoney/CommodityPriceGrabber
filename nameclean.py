@@ -253,6 +253,10 @@ class NameCleaner:
 
         if text == "LIQEURS":
             foundtext = 1
+            
+        if text == "LIOUOR":
+            text == "LIQUOR"
+            foundtext = 1
 
         if text ==  "LIQUIDCARBONDIOXIDE":
             text = "LIQUID CARBON DIOXIDE"
@@ -386,6 +390,10 @@ class NameCleaner:
             foundtext = 1
 
         if text == "SUPERCONDUCTORS":
+            foundtext = 1
+
+        if text ==  "SUPERCONDUCTDRS":
+            text = "SUPERCONDUCTORS"
             foundtext = 1
 
         if text ==  "SYNTHETICFABRICS":
