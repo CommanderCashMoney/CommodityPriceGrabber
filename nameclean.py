@@ -21,7 +21,7 @@ class NameCleaner:
         if text == "ALLOYS":
             foundtext = 1
 
-        if text == "ALUMINUM":
+        if text == "ALUMINIUM":
             foundtext = 1
 
         if text ==  "ANIMALFEED":
@@ -30,10 +30,6 @@ class NameCleaner:
 
         if text ==  "ANIMALMEAT":
             text = "ANIMAL MEAT"
-            foundtext = 1
-
-        if text ==  "BASICMEDICINES":
-            text = "BASIC MEDICINES"
             foundtext = 1
 
         if text ==  "ANIMALMONITORS":
@@ -219,9 +215,9 @@ class NameCleaner:
             text = "HYDROGEN FUEL"
             foundtext = 1
 
-        if text ==  "IMPERIALSLAVES":
-            text = "IMPERIAL SLAVES"
-            foundtext = 1
+        #if text ==  "IMPERIALSLAVES":
+        #    text = "IMPERIAL SLAVES"
+        #    foundtext = 1
 
         if text == "INDITE":
             foundtext = 1

@@ -30,45 +30,53 @@ class GrabPrices:
         App.focus("Elite - Dangerous (CLIENT)")
         #find commodity header
         global header
-        header = find("1416765457866-1.png")
+        header = find("1416765457866-2.png")
        
         #define working grid where we will look for rows. 
         #This limits the search area if you are running multiple monitors and speeds up the search
-        grid = Region(header.x - 10, header.y,1200,840)
-        global station
-        stationpic = capture(Region(header.x - 10, header.y - 150, 500,50))
-        station = self.enlargeimage(stationpic,300, -1)
+        grid = Region(header.x - 13, header.y,100,840)
+        #capture(grid)
+        #global station
+        #stationpic = capture(Region(header.x - 10, header.y - 150, 500,50))
+        #station = self.enlargeimage(stationpic,300, -1)
         #print station.text()
-        global arr 
+        global arr
         arr = []
 
         for x in range(70):
-            rowstart = grid.find("1416712504495.png")
-           
+            p = Pattern("1418504363339.png")
+            rowstart = grid.find(p)
+          
             #capture images
-            namepic = capture(Region(rowstart.x + 20, rowstart.y, 300,30))
-            name = self.enlargeimage(namepic,400, -1)
- 
-            #######################
-            sellpic = capture(Region(rowstart.x + 370, rowstart.y,100,30))
-            sellprice = self.enlargeimage(sellpic,110,40)
-                    
-            ###################
-            buypic = capture(Region(rowstart.x + 462, rowstart.y,100,30))
-            buyprice = self.enlargeimage(buypic,110,40)
-
-            ###################
-            supplypic = capture(Region(rowstart.x + 820, rowstart.y,200,30))
-            supply = self.enlargeimage(supplypic,220,45)
-
-            ########################
-            galavgpic = capture(Region(rowstart.x + 1030, rowstart.y,170,30))
-            galavg = self.enlargeimage(galavgpic,185,42)
-
+            namepic = capture(Region(rowstart.x + 20, rowstart.y + 3, 300,30))
+            name = Region(rowstart.x + 20, rowstart.y + 3, 300,30).text()
+            sellpic = capture(Region(rowstart.x + 370, rowstart.y + 3,100,30))
+            buypic = capture(Region(rowstart.x + 462, rowstart.y + 3,100,30))
+            supplypic = capture(Region(rowstart.x + 820, rowstart.y + 3,200,30))
+            galavgpic = capture(Region(rowstart.x + 1030, rowstart.y + 3,170,30))
             #exit loop when the exit button is found
             if name.find("EXIT") >= 0:
                 break
-            #remove any non numbers
+           
+            #arr.append([name,namepic,sellprice,sellpic,buyprice,buypic,supply,alert,supplypic])
+            arr.append([namepic,sellpic,buypic,supplypic,galavgpic])
+            
+            #wait(0.2)
+            keyDown("s")
+            wait(0.1)
+            keyUp("s")
+            wait(0.25)
+class extractPrices:
+    timestried = 0
+    def __init__(self):
+        global arr2
+        arr2 = []
+        for row in arr:
+            name = self.enlargeimage(arr[arr.index(row)][0],400, -1)
+            sellprice = self.enlargeimage(arr[arr.index(row)][1],110,40)
+            buyprice = self.enlargeimage(arr[arr.index(row)][2],110,40)
+            supply = self.enlargeimage(arr[arr.index(row)][3],220,45)
+            galavg = self.enlargeimage(arr[arr.index(row)][4],185,42)
             sellprice = re.sub("[^0-9]","",sellprice)
             if sellprice != "":
                 sellprice = int(sellprice)
@@ -97,18 +105,11 @@ class GrabPrices:
             namecleaned, namefound = nameclean.NameCleaner().cleanNames(name)
             if namefound == 0:
                 alert = alert + "namewarning"
-                
-            #clean names of hash tags and only unwanted characters 
-            #namecleaned =  re.sub("[^a-zA-Z\.\- ]","",namecleaned)
-            arr.append([namecleaned,namepic,sellprice,sellpic,buyprice,buypic,supply,alert,supplypic])
-           
-            
-            wait(0.1)
-            keyDown("s")
-            wait(0.1)
-            keyUp("s")
-            wait(0.16)
+            arr2.append([namecleaned,arr[arr.index(row)][0],sellprice,arr[arr.index(row)][1],buyprice,arr[arr.index(row)][2],supply,alert,arr[arr.index(row)][3]])
+            #arr2.append([name,sellprice,buyprice,supply,alert])
+   
     def enlargeimage(self,image,imagewidth,imageheight):
+        
         imageFile = open(image);
         ###j make image bigger for easier reading
         i = ImageIO.read(imageFile)
@@ -118,10 +119,15 @@ class GrabPrices:
         g.drawImage(largeimage,0,0,None)
         g.dispose()
         outputfile = File(image)
-        ImageIO.write(bImage, "png", outputfile)
- 
-        return re.sub("[^a-zA-Z0-9\.\- ]","", Image.text(image))
-    
+        try: 
+            ImageIO.write(bImage, "png", outputfile)
+            return re.sub("[^a-zA-Z0-9\.\- ]","", Image.text(image))
+        except:
+            print "Image Write failed -  retrying"
+            wait(0.1)
+            ImageIO.write(bImage, "png", outputfile)
+            return re.sub("[^a-zA-Z0-9\.\- ]","", Image.text(image))
+        
                         
 #exit()
 ##########################################################################
@@ -139,60 +145,59 @@ class PriceVerify:
         scrollpane.viewport.view = self.resultPanel
         scrollpane.getVerticalScrollBar().setUnitIncrement(16);
         self.frame.add(scrollpane)
-
         #Add Station Name
-        p = swing.JPanel()
-        self.field = swing.JTextField(station, 17)
-        self.field.setFont(awt.Font("Arial", awt.Font.BOLD, 30))
-        self.field.setName("textfieldStation")
-        #todo figure why this field causes screen wrap at reisman settlement in ros 709
-        p.add(self.field)
-        self.resultPanel.add(p)
+        #p = swing.JPanel()
+        #self.field = swing.JTextField(station, 17)
+        #self.field.setFont(awt.Font("Arial", awt.Font.BOLD, 30))
+        #self.field.setName("textfieldStation")
+         
+        #p.add(self.field)
+        #self.resultPanel.add(p)
         #loop through items and create panels
-        for row in arr:
+        for row in arr2:
             #name
             p = swing.JPanel()
-            p.add(swing.JLabel(swing.ImageIcon(arr[arr.index(row)][1],"East")))
-            self.field = swing.JTextField(str(arr[arr.index(row)][0]), 17)
+            p.add(swing.JLabel(swing.ImageIcon(arr2[arr2.index(row)][1],"East")))
+            self.field = swing.JTextField(str(arr2[arr2.index(row)][0]), 17)
             self.field.setFont(awt.Font("Arial", awt.Font.BOLD, 30))
             self.field.setName("textfieldName")
             p.add(self.field)
-            if (str(arr[arr.index(row)][7])).find('namewarning') > 0:
+            if (str(arr2[arr2.index(row)][7])).find('namewarning') > 0:
                self.field.setBackground(awt.Color.red)
             self.resultPanel.add(p)
             #sell price
             p = swing.JPanel()
-            p.add(swing.JLabel(swing.ImageIcon(arr[arr.index(row)][3],"East")))
-            self.field = swing.JTextField(str(arr[arr.index(row)][2]), 7)
+            p.add(swing.JLabel(swing.ImageIcon(arr2[arr2.index(row)][3],"East")))
+            self.field = swing.JTextField(str(arr2[arr2.index(row)][2]), 7)
             self.field.setFont(awt.Font("Arial", awt.Font.BOLD, 30))
             self.field.setName("textfield")
             p.add(self.field)
-            if (str(arr[arr.index(row)][7])).find('sellwarning') > 0:
+            if (str(arr2[arr2.index(row)][7])).find('sellwarning') > 0:
                self.field.setBackground(awt.Color.red)
             
             self.resultPanel.add(p)
             #buy price
-            if arr[arr.index(row)][4] != 0 | arr[arr.index(row)][6] != 0:
+            if arr2[arr2.index(row)][4] != 0 | arr2[arr2.index(row)][6] != 0:
                 p = swing.JPanel()
-                p.add(swing.JLabel(swing.ImageIcon(arr[arr.index(row)][5],"East")))
-                self.field = swing.JTextField(str(arr[arr.index(row)][4]), 7)
+                p.add(swing.JLabel(swing.ImageIcon(arr2[arr2.index(row)][5],"East")))
+                self.field = swing.JTextField(str(arr2[arr2.index(row)][4]), 7)
                 self.field.setFont(awt.Font("Arial", awt.Font.BOLD, 30))
                 self.field.setName("textfield")
                 p.add(self.field)
-                if (str(arr[arr.index(row)][7])).find('buywarning') > 0:
+                if (str(arr2[arr2.index(row)][7])).find('buywarning') > 0:
                    self.field.setBackground(awt.Color.red)
             
                 self.resultPanel.add(p)  
             #supply.. only shows if buy price is not 0 and supply price is 0
-            if arr[arr.index(row)][4] != 0: 
-                if arr[arr.index(row)][6] == 0:
+            if arr2[arr2.index(row)][4] != 0: 
+                if arr2[arr2.index(row)][6] == 0:
                     p = swing.JPanel()
-                    p.add(swing.JLabel(swing.ImageIcon(arr[arr.index(row)][8],"East")))
-                    self.field = swing.JTextField(str(arr[arr.index(row)][6]), 7)
+                    p.add(swing.JLabel(swing.ImageIcon(arr2[arr2.index(row)][8],"East")))
+                    self.field = swing.JTextField(str(arr2[arr2.index(row)][6]), 7)
                     self.field.setFont(awt.Font("Arial", awt.Font.BOLD, 30))
                     self.field.setName("textfield")
                     p.add(self.field)
-                    if (str(arr[arr.index(row)][7])).find('supplywarning') > 0:
+                    if (str(arr2[arr2.index(row)][7])).find('supplywarning') > 0:
                         self.field.setBackground(awt.Color.red)
                     self.resultPanel.add(p)  
             
@@ -215,9 +220,9 @@ class PriceVerify:
             fieldArray = panels.getComponents()
             
             for fields in fieldArray:
-                if (fields.getName() == 'textfieldStation'):
-                    global stationtext
-                    stationtext = fields.text
+                #if (fields.getName() == 'textfieldStation'):
+                #    global stationtext
+                #    stationtext = fields.text
                    
                     
                 if  (fields.getName() == 'textfieldName'):
@@ -225,7 +230,7 @@ class PriceVerify:
                     colcounter = 0
                 if (fields.getName() == 'textfield') | (fields.getName() == 'textfieldName'):
                    
-                    arr[rowcounter][colcounter] = fields.text
+                    arr2[rowcounter][colcounter] = fields.text
                     #print fields.text
                     
                     colcounter = colcounter + 2
@@ -235,25 +240,26 @@ class PriceVerify:
 class sendtoSlopey(Runnable):        
     def __init__(self):               
         App.focus("ED BEST")
-        click("1418344169076.png")
+        click("1418344169076-1.png")
         type(Key.TAB)
-        type(stationtext[:4])
+        #type(stationtext[:4])
         type(Key.TAB)
-        for row in arr:
-            namecleaned, namefound = nameclean.NameCleaner().cleanNames(str(arr[arr.index(row)][0]))
+        for row in arr2:
+            namecleaned, namefound = nameclean.NameCleaner().cleanNames(str(arr2[arr2.index(row)][0]))
             if namefound == 1:
                 
-                type(str(arr[arr.index(row)][0]))
+                type(str(arr2[arr2.index(row)][0]))
                 type(Key.TAB)
-                type(str(arr[arr.index(row)][2]))
+                type(str(arr2[arr2.index(row)][2]))
                 type(Key.TAB)
-                type(str(arr[arr.index(row)][4]))
+                type(str(arr2[arr2.index(row)][4]))
                 type(Key.TAB)
-                type(str(arr[arr.index(row)][6]))
+                type(str(arr2[arr2.index(row)][6]))
                 type(Key.TAB)
                 type(Key.ENTER)          
 
 GrabPrices()
+extractPrices()
 PriceVerify()
 
 
