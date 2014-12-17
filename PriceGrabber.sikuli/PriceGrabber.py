@@ -65,7 +65,7 @@ class GrabPrices:
             keyDown("s")
             wait(0.1)
             keyUp("s")
-            wait(0.25)
+            wait(0.7)
 class extractPrices:
     timestried = 0
     def __init__(self):
