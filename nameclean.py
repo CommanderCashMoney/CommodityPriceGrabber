@@ -250,10 +250,6 @@ class NameCleaner:
         if text == "LIQEURS":
             foundtext = 1
             
-        if text == "LIOUOR":
-            text == "LIQUOR"
-            foundtext = 1
-
         if text ==  "LIQUIDCARBONDIOXIDE":
             text = "LIQUID CARBON DIOXIDE"
             foundtext = 1
